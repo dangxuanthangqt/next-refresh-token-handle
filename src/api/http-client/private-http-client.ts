@@ -93,8 +93,6 @@ privateAxios.interceptors.response.use(
         try {
           await waitForRefreshTokenToBeFetched;
 
-          waitForRefreshTokenToBeFetched = false;
-
           // Modify the original request's headers before retrying
           if (originalRequest.headers) {
             originalRequest.headers.Authorization =
@@ -111,6 +109,8 @@ privateAxios.interceptors.response.use(
           return privateAxios(originalRequest);
         } catch {
           return Promise.reject(error);
+        } finally {
+          waitForRefreshTokenToBeFetched = false;
         }
       }
     }
