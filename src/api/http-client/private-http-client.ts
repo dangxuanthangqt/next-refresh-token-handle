@@ -15,6 +15,7 @@ import { ErrorRoutes, Routes } from "@/constants/route";
 import isPromise from "@/utils/is-promise";
 import { API_URL } from "@/constants/app-config";
 import { refreshTokenFromInternalServer } from "../internal-refresh-token-api";
+import isNull from "@/utils/is-null";
 
 const privateAxios = globalAxios.create({
   baseURL: API_URL,
@@ -55,14 +56,27 @@ let waitForRefreshTokenToBeFetched: Promise<true> | false = false;
 
 privateAxios.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  async (
+    error: AxiosError<{
+      message: string;
+      statusCode: HttpStatusCodeType;
+    }>
+  ) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === HttpStatusCode.GONE && originalRequest) {
+    if (
+      error.response?.status === HttpStatusCode.UNAUTHORIZED &&
+      originalRequest &&
+      error.response.data?.message.includes("expired") // check data error response from api
+    ) {
       if (waitForRefreshTokenToBeFetched === false) {
-        waitForRefreshTokenToBeFetched = new Promise((resolve) => {
+        waitForRefreshTokenToBeFetched = new Promise((resolve, reject) => {
           (async () => {
             const responseData = await refreshTokenFromInternalServer();
+
+            if (isNull(responseData)) {
+              reject("Refresh token error.");
+            }
 
             if (isString(responseData?.accessToken)) {
               privateHttpClientHeaderManager.setAuthorization(
@@ -76,24 +90,28 @@ privateAxios.interceptors.response.use(
       }
 
       if (isPromise(waitForRefreshTokenToBeFetched)) {
-        await waitForRefreshTokenToBeFetched;
+        try {
+          await waitForRefreshTokenToBeFetched;
 
-        waitForRefreshTokenToBeFetched = false;
+          waitForRefreshTokenToBeFetched = false;
 
-        // Modify the original request's headers *before* retrying
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization =
-            privateHttpClientHeaderManager.getAuthorization();
+          // Modify the original request's headers before retrying
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization =
+              privateHttpClientHeaderManager.getAuthorization();
+          }
+
+          // Comprehensive cache busting for retry request
+          const cacheBuster = `_retry=${Date.now()}`;
+          if (originalRequest.url) {
+            const separator = originalRequest.url.includes("?") ? "&" : "?";
+            originalRequest.url += `${separator}${cacheBuster}`;
+          }
+
+          return privateAxios(originalRequest);
+        } catch {
+          return Promise.reject(error);
         }
-
-        // Comprehensive cache busting for retry request
-        const cacheBuster = `_retry=${Date.now()}`;
-        if (originalRequest.url) {
-          const separator = originalRequest.url.includes("?") ? "&" : "?";
-          originalRequest.url += `${separator}${cacheBuster}`;
-        }
-
-        return privateAxios(originalRequest);
       }
     }
 
