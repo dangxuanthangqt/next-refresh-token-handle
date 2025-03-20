@@ -135,6 +135,7 @@ class PrivateHttpClient extends BaseHttpClient {
         waitForAuthTokenToBeFetched = new Promise((resolve) => {
           (async () => {
             const tokens = await getTokensFromInternalServer();
+            // return only access token
 
             if (isString(tokens?.accessToken)) {
               privateHttpClientHeaderManager.setAuthorization(
