@@ -73,7 +73,7 @@ privateAxios.interceptors.response.use(
         waitForRefreshTokenToBeFetched = new Promise((resolve, reject) => {
           (async () => {
             const responseData = await refreshTokenFromInternalServer();
-
+            // can return only access token
             if (isNull(responseData)) {
               reject("Refresh token error.");
             }
