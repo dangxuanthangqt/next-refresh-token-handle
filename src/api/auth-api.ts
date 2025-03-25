@@ -23,3 +23,13 @@ export async function getMe(id: number) {
 
   return response.data;
 }
+
+export async function getAuthorizationGoogleUrl() {
+  const response = await publicHttpClient.get<{
+    url: string;
+  }>({
+    url: "/google/authorization-url",
+  });
+
+  return response.data;
+}

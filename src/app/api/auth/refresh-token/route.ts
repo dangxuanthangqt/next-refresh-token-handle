@@ -1,5 +1,5 @@
 import serverFetch from "@/api/http-client/server-fetch";
-import { CookieKey } from "@/constants/cookie-key";
+import { CookieKey } from "@/constants/cookie";
 import { cookies } from "next/headers";
 import { defaultCookieOptions } from "../token/route";
 import { jwtDecode } from "jwt-decode";

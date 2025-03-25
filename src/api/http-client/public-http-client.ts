@@ -8,9 +8,10 @@ import BaseHttpClient from "./base-http-client";
 import { isHttpClientInvalidUUIDError } from "./http-client-error-utils";
 
 import type { HttpStatusCodeType } from "@/constants/http-status-code";
+import { API_URL } from "@/constants/app-config";
 
 const publicAxios = globalAxios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: API_URL,
 
   // `timeout` specifies the number of milliseconds before the request times out.
   // If the request takes longer than `timeout`, the request will be aborted.

@@ -1,22 +1,8 @@
-import { CookieKey } from "@/constants/cookie-key";
+import { CookieKey, defaultCookieOptions } from "@/constants/cookie";
 import isNumber from "@/utils/is-number";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { z } from "zod";
-
-export const defaultCookieOptions = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "lax",
-  secure: true,
-} as const;
-
-export const defaultStrictCookieOptions = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "strict",
-  secure: true,
-} as const;
 
 const postRequestBodySchema = z.object({
   accessToken: z.string(),
