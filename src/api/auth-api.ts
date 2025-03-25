@@ -33,3 +33,10 @@ export async function getAuthorizationGoogleUrl() {
 
   return response.data;
 }
+
+export async function logout(data: { refreshToken: string }) {
+  await privateHttpClient.post({
+    url: "/logout",
+    data,
+  });
+}

@@ -58,8 +58,8 @@ privateAxios.interceptors.response.use(
   (response) => response,
   async (
     error: AxiosError<{
-      message: string;
-      statusCode: HttpStatusCodeType;
+      message?: string;
+      statusCode?: HttpStatusCodeType; // TODO: update later
     }>
   ) => {
     const originalRequest = error.config;
@@ -67,7 +67,7 @@ privateAxios.interceptors.response.use(
     if (
       error.response?.status === HttpStatusCode.UNAUTHORIZED &&
       originalRequest &&
-      error.response.data?.message.includes("expired") // check data error response from api
+      error.response.data?.message?.includes("expired") // TODO: check data error response from api
     ) {
       if (waitForRefreshTokenToBeFetched === false) {
         waitForRefreshTokenToBeFetched = new Promise((resolve, reject) => {
@@ -114,6 +114,8 @@ privateAxios.interceptors.response.use(
         }
       }
     }
+
+    console.log("chay vao day--------");
 
     return Promise.reject(error);
   }
@@ -178,7 +180,7 @@ class PrivateHttpClient extends BaseHttpClient {
    */
   protected handleError(error: unknown) {
     const targetError = super.handleError(error);
-
+    console.log("targetError", targetError);
     // handle axios error
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx

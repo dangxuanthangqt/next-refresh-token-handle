@@ -1,7 +1,7 @@
 "use client";
 
 import { saveTokensForInternalServer } from "@/api/internal-auth-token-api";
-import { saveTokensToCookies } from "@/app/actions/actions";
+// import { saveTokensToCookies } from "@/app/actions/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -32,30 +32,30 @@ export default function PageContent() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { accessToken, refreshToken } = await tokensSchema.parseAsync({
-          accessToken: searchParams.get("accessToken"),
-          refreshToken: searchParams.get("refreshToken"),
-        });
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const { accessToken, refreshToken } = await tokensSchema.parseAsync({
+  //         accessToken: searchParams.get("accessToken"),
+  //         refreshToken: searchParams.get("refreshToken"),
+  //       });
 
-        // Can add more step to check if the token is valid or not before saving to cookies
-        // For example, check if the token is expired or not
+  //       // Can add more step to check if the token is valid or not before saving to cookies
+  //       // For example, check if the token is expired or not
 
-        // Save tokens to cookies by calling the server action
-        await saveTokensToCookies({ accessToken, refreshToken });
+  //       // Save tokens to cookies by calling the server action
+  //       await saveTokensToCookies({ accessToken, refreshToken });
 
-        router.push("/dashboard");
-      } catch (error) {
-        console.error({ error });
+  //       router.push("/dashboard");
+  //     } catch (error) {
+  //       console.error({ error });
 
-        router.push("/login-google");
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [router, searchParams]);
+  //       router.push("/login-google");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   })();
+  // }, [router, searchParams]);
 
   useEffect(() => {
     (async () => {
